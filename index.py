@@ -1,4 +1,9 @@
+import sys
+sys.path.append('lib/tweepy')
+
+import boto3
 import json
+import tweepy
 import datetime
 
 
