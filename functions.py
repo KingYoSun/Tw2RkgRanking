@@ -27,18 +27,6 @@ def date_to_unix(date):
     date_to_unix = date_to_datetime.timestamp()
     unix_convert_decimal = Decimal(date_to_unix)
     return unix_convert_decimal
-    
-def get_one_month_later():
-    today = datetime.date.today()
-    one_month_later = today + relativedelta(months=1)
-    one_month_later_convert = date_to_unix(one_month_later)
-    return one_month_later_convert
-    
-def get_three_days_after():
-    today = datetime.date.today()
-    three_days_after = today + relativedelta(days=2)
-    three_days_after_convert = date_to_unix(three_days_after)
-    return three_days_after_convert
 
 #更新日時、時刻の取得
 def get_update_at():
@@ -48,6 +36,13 @@ def get_update_at():
     current_time_for_unix = datetime.datetime(1970, 1, 1, hour=current_time.hour, minute=current_time.minute, second=current_time.second, microsecond=current_time.microsecond)
     updated_at_time = Decimal(current_time_for_unix.timestamp()).quantize(Decimal('0'), rounding=ROUND_DOWN)
     return {"datetime_str": str(current_time), "updated_at_date": updated_at_date, "updated_at_time": updated_at_time}
+
+#24時間後の取得
+def get_24h_after():
+    updated_at = get_update_at()
+    now = updated_at["updated_at_date"] + updated_at["updated_at_time"]
+    after24h = now + (60*60*24)
+    return after24h
 
 #レートの計算
 def get_rate(d_fav, d_RT):
