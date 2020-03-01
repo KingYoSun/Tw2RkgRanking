@@ -41,7 +41,8 @@ class DynamoDBTweet:
         try:
             ranker = ranking_table.query(
                 KeyConditionExpression = Key('div').eq(1),
-                ScanIndexForward = False
+                ScanIndexForward = False,
+                Limit = max_item
             )
         except Exception as e:
             print("Loading Ranker list failed: " + str(e))
@@ -110,6 +111,7 @@ class GetTweet:
 def handler(event, context):
     dynamoDB_tweet = DynamoDBTweet()
     dynamoDB_tweet.get_ranker()
+    #RankingDBリセット時
     if len(dynamoDB_tweet.ranker) < max_item:
         dynamoDB_tweet.get_tweet(max_item)
     dynamoDB_tweet.sort_ranker()
