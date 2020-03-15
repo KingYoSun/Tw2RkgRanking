@@ -104,7 +104,7 @@ class UpdateTweet:
             auth.set_access_token(AT, AS)
             self.api = tweepy.API(auth)
         except Exception as e:
-            raise('Twitter API Setup Error: ' + str(e))
+            print('Twitter API Setup Error: ' + str(e))
         finally:
             print('Set Twitter API Object')
     
@@ -114,7 +114,7 @@ class UpdateTweet:
             try:
                 result = self.api.get_status(self.ranker[i]["id"])
             except Exception as e:
-                raise("get_status Error: " + str(e))
+                print("get_status Error: " + str(e))
             else:
                 self.ranker[i]["favorite"] = functions.return_decimal(result.favorite_count)
                 self.ranker[i]["retweet"] = functions.return_decimal(result.retweet_count)
