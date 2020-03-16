@@ -115,7 +115,9 @@ class UpdateTweet:
                 result = self.api.get_status(self.ranker[i]["id"])
             except Exception as e:
                 print("get_status Error: " + str(e))
+                self.ranker[i]["delete_flag"] = 1
             else:
+                self.ranker[i]["delete_flag"] = 0
                 self.ranker[i]["favorite"] = functions.return_decimal(result.favorite_count)
                 self.ranker[i]["retweet"] = functions.return_decimal(result.retweet_count)
                 #最後にupdateされてからの時間
@@ -137,40 +139,51 @@ class SendDynamoDB:
         
     def put(self):
         try:
-            count = 0 # PutTweetCount
+            put_count = 0 # PutTweetCount
+            del_count = 0
             time_to_live = functions.get_24h_after()
             for i in range(len(self.data)):
                 #ツイート情報をRanking Tableにput
-                ranking_table.put_item(
-                    Item = {
-                        "div": functions.return_decimal(1),
-                        "id": self.data[i]["id"], 
-                        "user_name": self.data[i]["user_name"], 
-                        "user_screen_name": self.data[i]["user_screen_name"],
-                        "user_profile_image": self.data[i]["user_profile_image"],
-                        "text": self.data[i]["text"],
-                        "hour_count": self.data[i]["hour_count"],
-                        "favorite": self.data[i]["favorite"],
-                        "past_favorite": self.data[i]["past_favorite"],
-                        "d_fav": self.data[i]["d_fav"],
-                        "retweet": self.data[i]["retweet"],
-                        "past_retweet": self.data[i]["past_retweet"],
-                        "d_RT": self.data[i]["d_RT"],
-                        "rate": self.data[i]["rate"],
-                        "timestamp": self.data[i]["timestamp"],
-                        "updated_at_str": updated_at["datetime_str"],
-                        "updated_at_date": updated_at["updated_at_date"],
-                        "updated_at_time": updated_at["updated_at_time"],
-                        "time_to_live": time_to_live,
-                        "url": self.data[i]["url"],
-                        "img": self.data[i]["img"]
-                    }
-                )
-                count += 1
+                if (self.data[i]["delete_flag"] == 0):
+                    ranking_table.put_item(
+                        Item = {
+                            "div": functions.return_decimal(1),
+                            "id": self.data[i]["id"], 
+                            "user_name": self.data[i]["user_name"], 
+                            "user_screen_name": self.data[i]["user_screen_name"],
+                            "user_profile_image": self.data[i]["user_profile_image"],
+                            "text": self.data[i]["text"],
+                            "hour_count": self.data[i]["hour_count"],
+                            "favorite": self.data[i]["favorite"],
+                            "past_favorite": self.data[i]["past_favorite"],
+                            "d_fav": self.data[i]["d_fav"],
+                            "retweet": self.data[i]["retweet"],
+                            "past_retweet": self.data[i]["past_retweet"],
+                            "d_RT": self.data[i]["d_RT"],
+                            "rate": self.data[i]["rate"],
+                            "timestamp": self.data[i]["timestamp"],
+                            "updated_at_str": updated_at["datetime_str"],
+                            "updated_at_date": updated_at["updated_at_date"],
+                            "updated_at_time": updated_at["updated_at_time"],
+                            "time_to_live": time_to_live,
+                            "url": self.data[i]["url"],
+                            "img": self.data[i]["img"]
+                        }
+                    )
+                    put_count += 1
+                else:
+                    ranking_table.delete_item(
+                        Key = {
+                            "div": functions.return_decimal(1),
+                            "id": self.data[i]["id"]
+                        }
+                    )
+                    del_count += 1
+                
         except Exception as e:
             print('DynamoDB Error: ' + str(e))
         finally:
-            print('Finish putting DynamoDB, put {} Tweet'.format(count))
+            print('Finish putting DynamoDB, put {}, del {} Tweet'.format(put_count, del_count))
                 
 def handler(event, context):
     dynamoDB_tweet = DynamoDBTweet()
