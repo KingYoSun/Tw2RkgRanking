@@ -82,10 +82,7 @@ class DynamoDBTweet:
                     for j in range(len(self.ranker)):
                         if tweet_list[i]["id"] == self.ranker[j]["id"]:
                             hit_flag = True
-                            if tweet_list_updated > (self.ranker[j]["updated_at_date"] + self.ranker[j]["updated_at_time"]) :
-                                self.ranker[j] = tweet_list[i]
-                            else:
-                                break
+                            break
                     if hit_flag == False :
                         self.ranker.append(tweet_list[i])
                 else:
