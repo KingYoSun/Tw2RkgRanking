@@ -40,6 +40,7 @@ class DynamoDBTweet:
     def get_ranker(self):
         try:
             ranker = ranking_table.query(
+                IndexName = 'div-rate-index',
                 KeyConditionExpression = Key('div').eq(1),
                 ScanIndexForward = False,
                 Limit = max_item
