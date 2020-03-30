@@ -118,17 +118,11 @@ class UpdateTweet:
                 self.ranker[i]["delete_flag"] = 0
                 self.ranker[i]["favorite"] = functions.return_decimal(result.favorite_count)
                 self.ranker[i]["retweet"] = functions.return_decimal(result.retweet_count)
-                #最後にupdateされてからの時間
-                time_now = updated_at["updated_at_date"] + updated_at["updated_at_time"]
-                at_last_updated = self.ranker[i]["updated_at_date"] + self.ranker[i]["updated_at_time"]
-                time_last_update = time_now - at_last_updated
-                #time_last_updateが一時間(60*60 = 3600)以上の場合、rateの再計算
-                if time_last_update > 3600:
-                    self.ranker[i]["d_fav"] = self.ranker[i]["favorite"] - self.ranker[i]["past_favorite"]
-                    self.ranker[i]["past_favorite"] = self.ranker[i]["favorite"]
-                    self.ranker[i]["d_RT"] = self.ranker[i]["retweet"] - self.ranker[i]["past_retweet"]
-                    self.ranker[i]["past_retweet"] = self.ranker[i]["retweet"]
-                    self.ranker[i]["rate"] = functions.get_rate(self.ranker[i]["d_fav"], self.ranker[i]["d_RT"])
+                self.ranker[i]["d_fav"] = self.ranker[i]["favorite"] - self.ranker[i]["past_favorite"]
+                self.ranker[i]["past_favorite"] = self.ranker[i]["favorite"]
+                self.ranker[i]["d_RT"] = self.ranker[i]["retweet"] - self.ranker[i]["past_retweet"]
+                self.ranker[i]["past_retweet"] = self.ranker[i]["retweet"]
+                self.ranker[i]["rate"] = functions.get_rate(self.ranker[i]["d_fav"], self.ranker[i]["d_RT"])
 
 #DynamoDBにデータを送信
 class SendDynamoDB:
