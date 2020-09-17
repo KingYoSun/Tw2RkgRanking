@@ -197,7 +197,7 @@ class PostTweet:
     def post(self):
         sorted_data = sorted(self.data, key=lambda x: x["rate"], reverse=True)
         tweet = sorted_data[0]
-        self.api.update_status('今このスナップがVRChatterの間で話題になりつつあります! #VRChat #VRC #VRチャット', attachment_url=tweet["url"])
+        self.api.update_status('今このスナップがVRChatterの間で話題になりつつあります! #VRChat #VRC #VRチャット #VRCSnap', attachment_url=tweet["url"])
         print('Posted!')
  
 def handler(event, context):
