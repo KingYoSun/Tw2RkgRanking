@@ -1,5 +1,5 @@
 import sys
-sys.path.append('lib/tweepy')
+sys.path.append('lib')
 
 import boto3
 import json
@@ -176,7 +176,30 @@ class SendDynamoDB:
             print('DynamoDB Error: ' + str(e))
         finally:
             print('Finish putting DynamoDB, put {}, del {} Tweet'.format(put_count, del_count))
-                
+
+#ツイッターに投稿
+class PostTweet:
+    def __init__(self, data):
+        self.data = data
+        self.set_twitter_api()
+    
+    #Twitterオブジェクトの生成
+    def set_twitter_api(self):
+        try:
+            auth = tweepy.OAuthHandler(CK, CS)
+            auth.set_access_token(AT, AS)
+            self.api = tweepy.API(auth)
+        except Exception as e:
+            print('Twitter API Setup Error: ' + str(e))
+        finally:
+            print('Set Twitter API Object')
+    
+    def post(self):
+        sorted_data = sorted(self.data, key=lambda x: x["rate"], reverse=True)
+        tweet = sorted_data[0]
+        self.api.update_status('今このスナップがVRChatterの間で話題になりつつあります!', attachment_url=tweet["url"])
+        print('Posted!')
+ 
 def handler(event, context):
     dynamoDB_tweet = DynamoDBTweet()
     dynamoDB_tweet.get_ranker()
@@ -185,6 +208,8 @@ def handler(event, context):
     update_tweet.get_tweet_status()
     send_dynamoDB = SendDynamoDB(update_tweet.ranker)
     send_dynamoDB.put()
+    post_tweet = PostTweet(update_tweet.ranker)
+    post_tweet.post()
     #return{
     #    'isBase64Encoded': False,
     #    'statusCode': 200,
