@@ -208,8 +208,8 @@ def handler(event, context):
     update_tweet.get_tweet_status()
     send_dynamoDB = SendDynamoDB(update_tweet.ranker)
     send_dynamoDB.put()
-    post_tweet = PostTweet(update_tweet.ranker)
-    post_tweet.post()
+    #post_tweet = PostTweet(update_tweet.ranker)
+    #post_tweet.post()
     #return{
     #    'isBase64Encoded': False,
     #    'statusCode': 200,
